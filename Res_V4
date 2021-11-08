@@ -1,0 +1,413 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define ld long double
+char path[] = "userDB.txt";
+class menu
+{
+public:
+    int id;
+    string name;
+    int price;
+    int quantity;
+};
+
+vector<menu>arr;
+
+int readinfo()
+{
+    int i;
+    menu MENUE;
+    ifstream file(path);
+    if(!file.fail())
+    {
+        while(file>>MENUE.id)
+        {
+            file.ignore();
+            getline(file,MENUE.name);
+            file>>MENUE.price;
+            file>>MENUE.quantity;
+            arr.push_back(MENUE);
+        }
+        file.close();
+    }
+}
+
+void addinfo()
+{
+    int num,j;
+    j=arr.size();
+    ofstream file;
+    file.open(path, ios_base::app);
+    cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+    cout<<"How many MENU do you WANT to ADD?\n";
+    cout<<"Number of MENU(S):";
+    cin>>num;
+    menu MENUE;
+    if(num==0)cout<<"NO MENU has been added"<<endl;
+    menu s[num];
+
+    for(int i=0; i<num; i++)
+    {
+        cout<<"Menu ID#"<<(j+1)<<endl;
+        j++;
+        s[i].id=j-1;
+        file<<s[i].id<<endl;
+        cout<<"Name: ";
+        cin.ignore();
+        getline(cin,s[i].name);
+        file<<s[i].name<<endl;
+        cout<<"Price: ";
+        cin>>s[i].price;
+        file<<s[i].price<<endl;
+        cout<<"Quantity: ";
+        cin>>s[i].quantity;
+        file<<s[i].quantity<<endl;
+        if(i==(num-1))cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+    }
+    file.close();
+    arr.clear();
+    readinfo();
+}
+
+void showinfo()
+{
+    if(arr.size()==0)
+    {
+        cout<<"There is no menu......!"<<endl;
+        cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+    }
+    else
+    {
+        for(int i=0; i<arr.size(); i++)
+        {
+            cout<<"Menu #ID: "<<arr[i].id+1<<endl;
+            cout<<"Menu Name: "<<arr[i].name<<endl;
+            cout<<"Menu Price: "<<arr[i].price<<endl;
+            cout<<"Menu available: "<<arr[i].quantity<<endl;
+        }
+        cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+    }
+}
+
+void update()
+{
+    ofstream file(path);
+    file.open(path,file.trunc);
+    file.close();
+    file.open(path, ios_base::app);
+    for(int i=0; i<arr.size(); i++)
+    {
+        file<<arr[i].id<<endl;
+        file<<arr[i].name<<endl;
+        file<<arr[i].price<<endl;
+        file<<arr[i].quantity<<endl;
+    }
+    file.close();
+}
+
+void clearInfo()
+{
+    ofstream file(path);
+    file.open(path,file.trunc);
+    cout<<"Cleared all data from file...!"<<endl;
+    cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+    file.close();
+    arr.clear();
+}
+
+void updateSpecificMenu()
+{
+UpdateBegain:
+    cout<<"Please enter menu ID to update:";
+    int mId;
+    cin>>mId;
+    mId=mId-1;
+    cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+    cout<<"You are gonna update "<<arr[mId].name<<endl;
+    cout<<"The current price is "<<arr[mId].price<<endl<<"And the current stock is "<<arr[mId].quantity<<endl;
+    cout<<"Press: 0 to update this menu"<<endl<<"Press: 1 to update another menu"<<endl;
+    cout<<"Press :9 to exit from the update option"<<endl;
+UpdateError:
+    int x;
+    cin>>x;
+    if(x==0)
+    {
+        cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+        int a, b;
+        string s;
+        cout<<"Edit Menu Name (Press 0 to Skip): ";
+        cin>>s;
+        if(s!="0")
+            arr[mId].name=s;
+        cout<<"Enter New Price (Press 0 to Skip): ";
+        cin>>a;
+        cout<<endl;
+        if(a!=0)
+            arr[mId].price=a;
+        cout<<"Enter New Quantity (Press 0 to Skip): ";
+        cin>>b;
+        if(b!=0)
+            arr[mId].quantity=b;
+        if(s=="0" && a==0 && b==0)
+            cout<<"Nothing has been changed for this menu!"<<endl;
+        else
+            cout<<"The menu has been updated successfully"<<endl;
+        cout<<"Enter 0 to update another"<<endl<<"Enter 9 to Return"<<endl;
+        int y;
+        cin>>y;
+        if(y==0)
+            goto UpdateBegain;
+        else if(y==9)
+        {
+            update();
+            return;
+        }
+    }
+    else if(x==1)
+        goto UpdateBegain;
+    else if(x==9)
+    {
+        update();
+        return;
+    }
+    else
+    {
+        cout<<"Please enter 0, 1 or 9"<<endl;
+        goto UpdateError;
+    }
+
+}
+
+void owner()
+{
+    cout<<"Enter 1: To ADD menu(s)"<<endl;
+    cout<<"Enter 2: To SEE EXISTILNG menu(s)"<<endl;
+    cout<<"Enter 4: To update a SPECIFIC MENU"<<endl;
+    cout<<"Enter 9: To DELETE ALL menu"<<endl;
+    cout<<"Enter 0: To EXIT FROM Owner Panel"<<endl<<"Enter: ";
+    int test;
+    cin>>test;
+    if(test==1)
+    {
+        addinfo();
+        owner();
+        cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+    }
+    else if(test==2)
+    {
+        showinfo();
+        owner();
+    }
+    else if(test==4)
+    {
+        updateSpecificMenu();
+        owner();
+    }
+    else if(test==9)
+    {
+        clearInfo();
+        owner();
+    }
+    else if(test==0)
+    {
+        cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+        return ;
+    }
+    else
+    {
+        cout<<"Invalid Input...!"<<endl;
+        cout<<"Please select 0, 1, 2, 3, 4 or 9"<<endl;
+        owner();
+    }
+
+}
+
+void customer()
+{
+    int choice;
+    cout<<"Enter 1: To see ALL MENU before you order"<<endl;
+    cout<<"Enter 2: TO ORDER without seeing our menu list"<<endl;
+    cout<<"Enter 3: To EXIT from customer panel"<<endl;
+    cout<<"Enter: ";
+    cin>>choice;
+    if(choice==1)
+    {
+        if(arr.size()==0)
+        {
+            cout<<"There is NO MENU, Please CONTRACT the OWNER"<<endl;
+            cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+            customer();
+        }
+        else
+        {
+            showinfo();
+div2:
+            cout<<"Enter 1: To go back to Customer Panel"<<endl;
+            cout<<"Enter 2: To order now"<<endl<<"Enter: ";
+            cin>>choice;
+            if(choice==1) customer();
+            else if(choice==2) choice=2;
+            else
+            {
+                cout<<"Please enter 1 or 2"<<endl;
+                goto div2;
+            }
+        }
+    }
+
+    if(choice==2)
+    {
+newbill:
+        ll sum=0;
+        int oc=0;
+reOrder:
+        oc++;
+        if(arr.size()==0)
+        {
+            cout<<"There is NO MENU, Please CONTRACT the OWNER"<<endl;
+            cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+            customer();
+        }
+        int x,id,quen;
+        cout<<"HOW MUCH MENU do you want to ORDER: ";
+        cin>>x;
+        for(int j=0; j<x; j++)
+        {
+div4:
+            cout<<j+1<<".Enter menu id: ";
+            cin>>id;
+            if(id>arr.size() || id<1)
+            {
+                cout<<"Invalid MENU #ID...!"<<endl;
+                cout<<"Valid MENU #ID(s) are from 1 to "<<arr.size()<<endl;
+                cout<<"Enter this MENU again"<<endl;
+                j--;
+                continue;
+            }
+quantity:
+            cout<<"HOW MANY("<<arr[id-1].name<<"): ";
+            cin>>quen;
+            if(quen>arr[id-1].quantity)
+            {
+                cout<<"We HAVE ONLY "<<arr[id-1].quantity<<" item(s) left for this menu"<<endl;
+                if(arr[id-1].quantity==0)
+                {
+                    cout<<"Please Enter a NEW MENU"<<endl;
+                    goto div4;
+                }
+                else
+                    cout<<"Please ENTER AGAIN(0 for Skip)"<<endl;
+                goto quantity;
+
+            }
+            sum += quen*arr[id-1].price;
+            arr[id-1].quantity=arr[id-1].quantity-quen;
+        }
+        update();
+        cout<<"Total amount(BDT): "<<sum<<" Only"<<endl;
+        if(oc>1) cout<<"NB: This bill is ADD with PREVIOUS Amount"<<endl;
+        cout<<"Thank you....!!!"<<endl;
+        cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+div3:
+        cout<<"Enter 0: To ORDER AGAIN"<<endl;
+        cout<<"Enter 1: Go back to CUSTOMAR panel"<<endl;
+        cout<<"Enter: ";
+div1:
+        int cho;
+        cin>>cho;
+        if(cho==0)
+        {
+            cout<<"HAVE you PAID PREVIOUS BILL? If YES press 1 and if NO press 0"<<endl;
+            int pBill;
+            cin>>pBill;
+            if(pBill==0)
+                goto reOrder;
+            else if (pBill==1)
+                goto newbill;
+            else
+            {
+                cout<<"Type AGAIN.....!!"<<endl;
+                cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+                goto div1;
+            }
+        }
+
+        else if(cho==1)
+            customer();
+        else
+        {
+            cout<<"Invalid Input...!"<<endl;
+            cout<<"Please Press 0 or 1"<<endl;
+            goto div3;
+        }
+
+
+    }
+    if(choice==3)
+        return;
+    else
+    {
+        cout<<"Invalid Input...!"<<endl;
+        cout<<"Please Press 0, 1, 2, or 3"<<endl;
+        customer();
+    }
+
+}
+
+void app()
+{
+    ifstream file(path);
+    if(file.fail())
+    {
+        cout<<"App has STOPPED working!"<<endl;
+        cout<<"Error code: File not found!!"<<endl;
+        cout<<"To fix this create a txt file named userDB (userDB.txt)";
+        return;
+    }
+    cout<<"Enter 1: If you are the OWNER. "<<endl;
+    cout<<"Enter 2: If you are a CUSTOMER"<<endl;
+    cout<<"Enter 0: To EXIT"<<endl;
+    cout<<"Enter: ";
+    int choi;
+    cin>>choi;
+    cout<<"You entered "<<choi<<endl;
+    if(choi==1)
+    {
+        cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+        cout<<"Welcome to the ADMIN panel"<<endl;
+        owner();
+        app();
+    }
+
+    else if(choi==2)
+    {
+        cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+        cout<<"Welcome to our RESTAURANT Sir"<<endl;
+        customer();
+        app();
+    }
+
+    else if(choi==0)
+    {
+        cout<<"THANK You"<<endl;
+        cout<<"<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>"<<endl<<endl<<endl;
+        return;
+    }
+
+    else
+    {
+        cout<<"Invalid Input...!"<<endl;
+        cout<<"Please PRESS 0, 1 or 2"<<endl;
+        app();
+    }
+
+}
+
+int main()
+{
+    readinfo();
+    cout<<"Welcome to RESTAURANT"<<endl<<endl<<endl;
+    app();
+    return 0;
+}
